@@ -1,6 +1,8 @@
 using Kavifx.API.Data;
+using Kavifx.API.Helpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
@@ -8,6 +10,15 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddDbContext<AppDbContext>(opts =>
+{
+    var connectionString = ConnectionStringHelper.BuildConnectionString(builder.Configuration);
+
+    opts.UseMySql(
+        connectionString,
+        ServerVersion.AutoDetect(connectionString)
+    );
+});
 
 builder.Services.AddIdentity<AppUser,AppRole>()
     .AddEntityFrameworkStores<AppDbContext>()
